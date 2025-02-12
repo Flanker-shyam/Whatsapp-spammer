@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const readline = require("readline");
 const { setTimeout } = require("timers/promises");
-const {Jokes} = require("./jokes");
+const {MetaPrompt} = require("./jokes");
 const { timeout } = require("puppeteer");
 
 const initConnection = async (url) => {
@@ -48,12 +48,14 @@ const sendMessage = async (targetUrl, page, user, messages, count) => {
 
   for (let i = 0; i < count; i++) {
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-    const message = `${randomMessage} 😂`;
-
+    const message = `${randomMessage}`;
+    console.log("Messa: ", message)
     try {
+      await inputBox.type("@meta", { timeout: 1000 });
+      await page.keyboard.press("Enter", { timeout: 10000 }); // Press Enter to send the message
       await inputBox.type(message, { timeout: 10000 }); // Type the message in the input box
       await page.keyboard.press("Enter", { timeout: 10000 }); // Press Enter to send the message
-      await setTimeout(2000);
+      await setTimeout(1000);
     } catch (err) {
       throw err;
     }
@@ -81,15 +83,14 @@ const main = async () => {
 
       // Ask for the user input (name) and message in sequence
       rl.question("Please enter the name of the user: ", (user) => {
-        rl.question("Please enter the message: ", (message) => {
-          // Call the function to send the message
-          const messages = Jokes
+        // Call the function to send the message
+        const messages = MetaPrompt;
+        console.log("here:", messages);
 
-          sendMessage(targetUrl, page, user, messages, 50);
+        sendMessage(targetUrl, page, user, messages, 20);
 
-          // Close the readline interface after sending the message
-          rl.close();
-        });
+        // Close the readline interface after sending the message
+        rl.close();
       });
     } else {
       console.log("Failed to load WhatsApp.");
